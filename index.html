@@ -4,11 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Matthew Trapp</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="description" content="Matthew Trapp — Entrepreneur, Father, Waterman, Builder. AI systems, digital operations, and controlled business infrastructure.">
+<script src="https://unpkg.com/nice-waves@latest"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap');
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   html { scroll-behavior: smooth; }
 
   body {
@@ -18,307 +20,58 @@
     overflow-x: hidden;
   }
 
-  /* Water canvas */
-  #water-canvas {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-  }
+  #water-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  #waves { width: 100%; height: 200px; pointer-events: none; }
+  #waves canvas { width: 100% !important; height: 100% !important; }
 
-  /* Noise overlay */
   .noise {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    opacity: 0.025;
+    position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.025;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     background-repeat: repeat;
   }
 
-  /* Content */
-  .container {
-    position: relative;
-    z-index: 2;
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 0 40px;
-  }
+  .container { position: relative; z-index: 2; max-width: 1000px; margin: 0 auto; padding: 0 40px; }
 
-  /* Hero */
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    position: relative;
-  }
-
-  .hero h1 {
-    font-size: clamp(4rem, 12vw, 9rem);
-    font-weight: 700;
-    line-height: 0.9;
-    letter-spacing: -0.04em;
-  }
-
+  .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; position: relative; }
+  .hero h1 { font-size: clamp(4rem, 12vw, 9rem); font-weight: 700; line-height: 0.9; letter-spacing: -0.04em; }
   .hero h1 .first { display: block; }
-  .hero h1 .last {
-    display: block;
-    -webkit-text-stroke: 2px #f0ede8;
-    color: transparent;
-  }
+  .hero h1 .last { display: block; -webkit-text-stroke: 2px #f0ede8; color: transparent; }
+  .hero .roles { margin-top: 40px; display: flex; gap: 32px; flex-wrap: wrap; }
+  .hero .role { font-size: 0.85rem; font-weight: 300; letter-spacing: 0.15em; text-transform: uppercase; color: #666; position: relative; padding-left: 16px; }
+  .hero .role::before { content: ''; position: absolute; left: 0; top: 50%; width: 6px; height: 6px; border-radius: 50%; background: #5a8aad; transform: translateY(-50%); }
 
-  .hero .roles {
-    margin-top: 40px;
-    display: flex;
-    gap: 32px;
-    flex-wrap: wrap;
-  }
+  .section { padding: 140px 0; border-top: 1px solid rgba(255,255,255,0.04); }
+  .section-label { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: #5a8aad; margin-bottom: 24px; }
+  .section h2 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 500; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 20px; }
+  .section p { font-size: 1.1rem; font-weight: 300; line-height: 1.8; color: #888; max-width: 600px; }
 
-  .hero .role {
-    font-size: 0.85rem;
-    font-weight: 300;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: #666;
-    position: relative;
-    padding-left: 16px;
-  }
+  .identity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 48px; }
+  .identity-card { background: rgba(255,255,255,0.02); padding: 40px 32px; transition: background 0.5s ease, border-color 0.5s ease; border: 1px solid rgba(255,255,255,0.03); }
+  .identity-card:hover { background: rgba(90,138,173,0.06); border-color: rgba(90,138,173,0.15); }
+  .identity-card h3 { font-size: 1.3rem; font-weight: 500; margin-bottom: 12px; }
+  .identity-card p { font-size: 0.95rem; font-weight: 300; line-height: 1.6; color: #777; }
 
-  .hero .role::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #5a8aad;
-    transform: translateY(-50%);
-  }
-
-  .scroll-line {
-    position: absolute;
-    bottom: 60px;
-    left: 50%;
-    width: 1px;
-    height: 60px;
-    background: linear-gradient(to bottom, transparent, #5a8aad);
-    animation: pulse 2.5s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 0.2; }
-    50% { opacity: 0.8; }
-  }
-
-  /* Sections */
-  .section {
-    padding: 140px 0;
-    border-top: 1px solid rgba(255,255,255,0.04);
-  }
-
-  .section-label {
-    font-size: 0.7rem;
-    font-weight: 500;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: #5a8aad;
-    margin-bottom: 24px;
-  }
-
-  .section h2 {
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    font-weight: 500;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    margin-bottom: 20px;
-  }
-
-  .section p {
-    font-size: 1.1rem;
-    font-weight: 300;
-    line-height: 1.8;
-    color: #888;
-    max-width: 600px;
-  }
-
-  /* Identity grid */
-  .identity-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
-    margin-top: 48px;
-  }
-
-  .identity-card {
-    background: rgba(255,255,255,0.02);
-    padding: 40px 32px;
-    transition: background 0.5s ease, border-color 0.5s ease;
-    border: 1px solid rgba(255,255,255,0.03);
-  }
-
-  .identity-card:hover {
-    background: rgba(90,138,173,0.06);
-    border-color: rgba(90,138,173,0.15);
-  }
-
-  .identity-card h3 {
-    font-size: 1.3rem;
-    font-weight: 500;
-    margin-bottom: 12px;
-  }
-
-  .identity-card p {
-    font-size: 0.95rem;
-    font-weight: 300;
-    line-height: 1.6;
-    color: #777;
-  }
-
-  /* AI Section */
-  .ai-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-top: 48px;
-  }
-
-  .ai-card {
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 12px;
-    padding: 36px 32px;
-    transition: all 0.5s ease;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .ai-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #5a8aad, transparent);
-    opacity: 0;
-    transition: opacity 0.5s;
-  }
-
-  .ai-card:hover {
-    background: rgba(90,138,173,0.05);
-    border-color: rgba(90,138,173,0.15);
-    transform: translateY(-2px);
-  }
-
+  .ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 48px; }
+  .ai-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 36px 32px; transition: all 0.5s ease; position: relative; overflow: hidden; }
+  .ai-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #5a8aad, transparent); opacity: 0; transition: opacity 0.5s; }
+  .ai-card:hover { background: rgba(90,138,173,0.05); border-color: rgba(90,138,173,0.15); transform: translateY(-2px); }
   .ai-card:hover::before { opacity: 1; }
+  .ai-card .ai-icon { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: #5a8aad; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .ai-card .ai-icon .dot { width: 4px; height: 4px; border-radius: 50%; background: #5a8aad; }
+  .ai-card h3 { font-size: 1.15rem; font-weight: 500; margin-bottom: 10px; line-height: 1.3; }
+  .ai-card p { font-size: 0.9rem; font-weight: 300; line-height: 1.65; color: #777; }
 
-  .ai-card .ai-icon {
-    font-size: 0.7rem;
-    font-weight: 500;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: #5a8aad;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+  .ai-philosophy { margin-top: 48px; padding: 40px; border-left: 2px solid rgba(90,138,173,0.3); background: rgba(90,138,173,0.03); }
+  .ai-philosophy p { font-size: 1.05rem; font-weight: 300; line-height: 1.8; color: #999; font-style: italic; }
+  .ai-philosophy .attr { margin-top: 16px; font-style: normal; font-size: 0.85rem; color: #5a8aad; }
 
-  .ai-card .ai-icon .dot {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: #5a8aad;
-  }
-
-  .ai-card h3 {
-    font-size: 1.15rem;
-    font-weight: 500;
-    margin-bottom: 10px;
-    line-height: 1.3;
-  }
-
-  .ai-card p {
-    font-size: 0.9rem;
-    font-weight: 300;
-    line-height: 1.65;
-    color: #777;
-  }
-
-  .ai-philosophy {
-    margin-top: 48px;
-    padding: 40px;
-    border-left: 2px solid rgba(90,138,173,0.3);
-    background: rgba(90,138,173,0.03);
-  }
-
-  .ai-philosophy p {
-    font-size: 1.05rem;
-    font-weight: 300;
-    line-height: 1.8;
-    color: #999;
-    font-style: italic;
-  }
-
-  .ai-philosophy .attr {
-    margin-top: 16px;
-    font-style: normal;
-    font-size: 0.85rem;
-    color: #5a8aad;
-  }
-
-  /* CTA */
-  .cta {
-    padding: 140px 0;
-    text-align: center;
-    border-top: 1px solid rgba(255,255,255,0.04);
-  }
-
-  .cta h2 {
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    margin-bottom: 40px;
-  }
-
-  .cta-link {
-    display: inline-block;
-    color: #0a0a0a;
-    background: #f0ede8;
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 500;
-    padding: 18px 56px;
-    border-radius: 100px;
-    transition: all 0.4s ease;
-  }
-
-  .cta-link:hover {
-    background: #5a8aad;
-    transform: scale(1.05);
-    box-shadow: 0 0 40px rgba(90,138,173,0.25);
-  }
-
-  .cta .subtle {
-    margin-top: 24px;
-    font-size: 0.85rem;
-    color: #555;
-  }
-
-  .cta .subtle a {
-    color: #888;
-    text-decoration: none;
-    border-bottom: 1px solid #444;
-    transition: color 0.3s, border-color 0.3s;
-  }
-
-  .cta .subtle a:hover {
-    color: #5a8aad;
-    border-color: #5a8aad;
-  }
+  .cta { padding: 140px 0; text-align: center; border-top: 1px solid rgba(255,255,255,0.04); }
+  .cta h2 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 500; letter-spacing: -0.02em; margin-bottom: 40px; }
+  .cta-link { display: inline-block; color: #0a0a0a; background: #f0ede8; text-decoration: none; font-size: 1rem; font-weight: 500; padding: 18px 56px; border-radius: 100px; transition: all 0.4s ease; }
+  .cta-link:hover { background: #5a8aad; transform: scale(1.05); box-shadow: 0 0 40px rgba(90,138,173,0.25); }
+  .cta .subtle { margin-top: 24px; font-size: 0.85rem; color: #555; }
+  .cta .subtle a { color: #888; text-decoration: none; border-bottom: 1px solid #444; transition: color 0.3s, border-color 0.3s; }
+  .cta .subtle a:hover { color: #5a8aad; border-color: #5a8aad; }
 
   @media (max-width: 768px) {
     .container { padding: 0 24px; }
@@ -336,19 +89,14 @@
 <div class="noise"></div>
 
 <div class="container">
-
   <div class="hero">
-    <h1>
-      <span class="first">Matthew</span>
-      <span class="last">Trapp</span>
-    </h1>
+    <h1><span class="first">Matthew</span><span class="last">Trapp</span></h1>
     <div class="roles">
       <span class="role">Entrepreneur</span>
       <span class="role">Father</span>
       <span class="role">Waterman</span>
       <span class="role">Builder</span>
     </div>
-    <div class="scroll-line"></div>
   </div>
 
   <div class="section">
@@ -361,7 +109,6 @@
     <div class="section-label">AI — For Real</div>
     <h2>AI that does work,<br>not just demos.</h2>
     <p>Most businesses are stuck between AI hype and actual implementation. I build the bridge — controlled systems where AI does real work under real constraints.</p>
-
     <div class="ai-grid">
       <div class="ai-card">
         <div class="ai-icon"><span class="dot"></span>Workflow Intelligence</div>
@@ -384,7 +131,6 @@
         <p>AI embedded in real workflows with logging, approvals, failure modes, and kill switches. Production-grade, not prototype-grade.</p>
       </div>
     </div>
-
     <div class="ai-philosophy">
       <p>Use deterministic tools for the plumbing. Use AI where the inputs are fuzzy, the rules are incomplete, or the work is language-heavy. Require human approval for anything irreversible.</p>
       <div class="attr">— Operating principle</div>
@@ -395,29 +141,12 @@
     <div class="section-label">Identities</div>
     <h2>Multiple currents. One direction.</h2>
     <div class="identity-grid">
-      <div class="identity-card">
-        <h3>Entrepreneur</h3>
-        <p>Building businesses and systems designed to last. Strategy through execution — not one or the other.</p>
-      </div>
-      <div class="identity-card">
-        <h3>Dad</h3>
-        <p>The non-negotiable center. Everything else is shaped around this.</p>
-      </div>
-      <div class="identity-card">
-        <h3>Waterman</h3>
-        <p>The ocean teaches patience, humility, and how to read what's coming before it arrives.</p>
-      </div>
-      <div class="identity-card">
-        <h3>GC — Digital</h3>
-        <p>Scope. Architect. Orchestrate. Deliver. I general-contract digital work from strategy to ship.</p>
-      </div>
-      <div class="identity-card">
-        <h3>Partner</h3>
-        <p>I build alongside people. Shared risk, shared upside. No ivory tower consulting.</p>
-      </div>
-      <div class="identity-card" style="display:flex;align-items:center;justify-content:center;">
-        <p style="color:#5a8aad;font-weight:400;font-size:0.95rem;">The current keeps moving.</p>
-      </div>
+      <div class="identity-card"><h3>Entrepreneur</h3><p>Building businesses and systems designed to last. Strategy through execution — not one or the other.</p></div>
+      <div class="identity-card"><h3>Dad</h3><p>The non-negotiable center. Everything else is shaped around this.</p></div>
+      <div class="identity-card"><h3>Waterman</h3><p>The ocean teaches patience, humility, and how to read what's coming before it arrives.</p></div>
+      <div class="identity-card"><h3>GC — Digital</h3><p>Scope. Architect. Orchestrate. Deliver. I general-contract digital work from strategy to ship.</p></div>
+      <div class="identity-card"><h3>Partner</h3><p>I build alongside people. Shared risk, shared upside. No ivory tower consulting.</p></div>
+      <div class="identity-card" style="display:flex;align-items:center;justify-content:center;"><p style="color:#5a8aad;font-weight:400;font-size:0.95rem;">The current keeps moving.</p></div>
     </div>
   </div>
 
@@ -426,20 +155,16 @@
     <a class="cta-link" href="mailto:matt@matthewtrapp.com">Get in touch</a>
     <p class="subtle">Digital projects through <a href="https://usablemotion.com">Usable Motion</a></p>
   </div>
-
 </div>
+
+<div id="waves"></div>
 
 <script>
 // === Digital Water Simulation ===
 const canvas = document.getElementById('water-canvas');
 const ctx = canvas.getContext('2d');
-
-let width, height;
-let particles = [];
-let ripples = [];
+let width, height, particles = [], ripples = [];
 let mouse = { x: -1000, y: -1000, px: -1000, py: -1000, speed: 0 };
-let scrollY = 0;
-let animFrame;
 
 function resize() {
   width = canvas.width = window.innerWidth;
@@ -452,15 +177,10 @@ function initParticles() {
   const density = Math.min(width * height / 8000, 350);
   for (let i = 0; i < density; i++) {
     particles.push({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      baseX: 0,
-      baseY: 0,
-      vx: 0,
-      vy: 0,
+      x: Math.random() * width, y: Math.random() * height,
+      baseX: 0, baseY: 0, vx: 0, vy: 0,
       size: Math.random() * 1.5 + 0.5,
       alpha: Math.random() * 0.3 + 0.05,
-      drift: Math.random() * 0.3 + 0.1,
       phase: Math.random() * Math.PI * 2,
       waveAmp: Math.random() * 0.5 + 0.2,
       waveFreq: Math.random() * 0.01 + 0.005,
@@ -471,34 +191,20 @@ function initParticles() {
 
 class Ripple {
   constructor(x, y, strength) {
-    this.x = x;
-    this.y = y;
-    this.radius = 0;
+    this.x = x; this.y = y; this.radius = 0;
     this.maxRadius = 200 + strength * 100;
-    this.strength = strength;
-    this.life = 1;
+    this.strength = strength; this.life = 1;
     this.speed = 3 + strength * 2;
   }
-
-  update() {
-    this.radius += this.speed;
-    this.life = 1 - (this.radius / this.maxRadius);
-    return this.life > 0;
-  }
-
+  update() { this.radius += this.speed; this.life = 1 - (this.radius / this.maxRadius); return this.life > 0; }
   influence(px, py) {
-    const dx = px - this.x;
-    const dy = py - this.y;
+    const dx = px - this.x, dy = py - this.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
     const ringDist = Math.abs(dist - this.radius);
-
     if (ringDist < 40) {
       const wave = Math.cos((ringDist / 40) * Math.PI) * this.life * this.strength;
       const angle = Math.atan2(dy, dx);
-      return {
-        fx: Math.cos(angle) * wave * 2,
-        fy: Math.sin(angle) * wave * 2
-      };
+      return { fx: Math.cos(angle) * wave * 2, fy: Math.sin(angle) * wave * 2 };
     }
     return { fx: 0, fy: 0 };
   }
@@ -508,180 +214,95 @@ let rippleTimer = 0;
 
 function update(time) {
   ctx.clearRect(0, 0, width, height);
-
   const t = time * 0.001;
-
-  // Mouse speed
-  const mdx = mouse.x - mouse.px;
-  const mdy = mouse.y - mouse.py;
+  const mdx = mouse.x - mouse.px, mdy = mouse.y - mouse.py;
   mouse.speed = Math.sqrt(mdx * mdx + mdy * mdy);
-  mouse.px = mouse.x;
-  mouse.py = mouse.y;
+  mouse.px = mouse.x; mouse.py = mouse.y;
 
-  // Spawn ripples on movement
   rippleTimer += mouse.speed;
   if (rippleTimer > 40 && mouse.speed > 2) {
     ripples.push(new Ripple(mouse.x, mouse.y, Math.min(mouse.speed / 30, 1)));
     rippleTimer = 0;
   }
-
-  // Update ripples
   ripples = ripples.filter(r => r.update());
 
-  // Draw ripple rings
   ripples.forEach(r => {
-    ctx.beginPath();
-    ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
-    ctx.strokeStyle = `rgba(90, 138, 173, ${r.life * 0.08})`;
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    // Inner ring
+    ctx.beginPath(); ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(90,138,173,${r.life * 0.08})`; ctx.lineWidth = 1.5; ctx.stroke();
     if (r.radius > 10) {
-      ctx.beginPath();
-      ctx.arc(r.x, r.y, r.radius * 0.7, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(90, 138, 173, ${r.life * 0.04})`;
-      ctx.lineWidth = 1;
-      ctx.stroke();
+      ctx.beginPath(); ctx.arc(r.x, r.y, r.radius * 0.7, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(90,138,173,${r.life * 0.04})`; ctx.lineWidth = 1; ctx.stroke();
     }
   });
 
-  // Update and draw particles
-  for (let i = 0; i < particles.length; i++) {
-    const p = particles[i];
-
-    // Ambient wave drift
+  for (const p of particles) {
     const wave = Math.sin(t * p.waveFreq * 60 + p.phase) * p.waveAmp;
     const wave2 = Math.cos(t * p.waveFreq * 40 + p.phase * 1.3) * p.waveAmp * 0.6;
-
-    // Mouse fluid push
-    const dx = p.x - mouse.x;
-    const dy = p.y - mouse.y;
+    const dx = p.x - mouse.x, dy = p.y - mouse.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
-    const mouseRadius = 180;
-
-    if (dist < mouseRadius && dist > 0) {
-      const force = (1 - dist / mouseRadius) * 0.8;
+    if (dist < 180 && dist > 0) {
+      const force = (1 - dist / 180) * 0.8;
       const angle = Math.atan2(dy, dx);
-      // Push outward + slight tangential swirl (water-like)
       p.vx += Math.cos(angle) * force * 1.5 + Math.cos(angle + 1.2) * force * 0.5;
       p.vy += Math.sin(angle) * force * 1.5 + Math.sin(angle + 1.2) * force * 0.5;
     }
-
-    // Ripple influence
-    for (const r of ripples) {
-      const inf = r.influence(p.x, p.y);
-      p.vx += inf.fx * 0.3;
-      p.vy += inf.fy * 0.3;
-    }
-
-    // Apply velocity with water-like damping
-    p.vx *= 0.94;
-    p.vy *= 0.94;
-
-    // Spring back to base position (gentle current)
-    const homeX = p.baseX + wave * 15;
-    const homeY = p.baseY + wave2 * 10;
-    p.vx += (homeX - p.x) * 0.008;
-    p.vy += (homeY - p.y) * 0.008;
-
-    p.x += p.vx;
-    p.y += p.vy;
-
-    // Wrap
+    for (const r of ripples) { const inf = r.influence(p.x, p.y); p.vx += inf.fx * 0.3; p.vy += inf.fy * 0.3; }
+    p.vx *= 0.94; p.vy *= 0.94;
+    p.vx += (p.baseX + wave * 15 - p.x) * 0.008;
+    p.vy += (p.baseY + wave2 * 10 - p.y) * 0.008;
+    p.x += p.vx; p.y += p.vy;
     if (p.x < -10) { p.x = width + 10; p.baseX = p.x; }
     if (p.x > width + 10) { p.x = -10; p.baseX = p.x; }
     if (p.y < -10) { p.y = height + 10; p.baseY = p.y; }
     if (p.y > height + 10) { p.y = -10; p.baseY = p.y; }
-
-    // Velocity-reactive alpha and size
     const vel = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-    const dynamicAlpha = Math.min(p.alpha + vel * 0.04, 0.6);
-    const dynamicSize = p.size + vel * 0.15;
-
-    // Draw
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, dynamicSize, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(90, 138, 173, ${dynamicAlpha})`;
-    ctx.fill();
-
-    // Glow for fast particles
-    if (vel > 2) {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, dynamicSize + 3, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(90, 138, 173, ${vel * 0.01})`;
-      ctx.fill();
-    }
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.size + vel * 0.15, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(90,138,173,${Math.min(p.alpha + vel * 0.04, 0.6)})`; ctx.fill();
+    if (vel > 2) { ctx.beginPath(); ctx.arc(p.x, p.y, p.size + vel * 0.15 + 3, 0, Math.PI * 2); ctx.fillStyle = `rgba(90,138,173,${vel * 0.01})`; ctx.fill(); }
   }
 
-  // Draw connecting lines between nearby particles
   for (let i = 0; i < particles.length; i++) {
     for (let j = i + 1; j < particles.length; j++) {
-      const dx = particles[i].x - particles[j].x;
-      const dy = particles[i].y - particles[j].y;
+      const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
       const dist = dx * dx + dy * dy;
       if (dist < 6000) {
-        const alpha = (1 - dist / 6000) * 0.06;
-        ctx.beginPath();
-        ctx.moveTo(particles[i].x, particles[i].y);
-        ctx.lineTo(particles[j].x, particles[j].y);
-        ctx.strokeStyle = `rgba(90, 138, 173, ${alpha})`;
-        ctx.lineWidth = 0.5;
-        ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(90,138,173,${(1 - dist / 6000) * 0.06})`; ctx.lineWidth = 0.5; ctx.stroke();
       }
     }
   }
 
-  // Ambient cursor glow
   if (mouse.x > 0) {
-    const gradient = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 200);
-    gradient.addColorStop(0, `rgba(90, 138, 173, ${0.04 + mouse.speed * 0.001})`);
-    gradient.addColorStop(1, 'transparent');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(mouse.x - 200, mouse.y - 200, 400, 400);
+    const g = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 200);
+    g.addColorStop(0, `rgba(90,138,173,${0.04 + mouse.speed * 0.001})`); g.addColorStop(1, 'transparent');
+    ctx.fillStyle = g; ctx.fillRect(mouse.x - 200, mouse.y - 200, 400, 400);
   }
-
-  animFrame = requestAnimationFrame(update);
+  requestAnimationFrame(update);
 }
 
-// Events
 window.addEventListener('resize', resize);
-
-document.addEventListener('mousemove', (e) => {
-  mouse.x = e.clientX;
-  mouse.y = e.clientY;
-});
-
-document.addEventListener('mouseleave', () => {
-  mouse.x = -1000;
-  mouse.y = -1000;
-});
-
-// Click ripple
-document.addEventListener('click', (e) => {
-  ripples.push(new Ripple(e.clientX, e.clientY, 1.5));
-});
-
+document.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+document.addEventListener('mouseleave', () => { mouse.x = -1000; mouse.y = -1000; });
+document.addEventListener('click', (e) => { ripples.push(new Ripple(e.clientX, e.clientY, 1.5)); });
 resize();
 requestAnimationFrame(update);
 
+// === Nice Waves footer ===
+waves({
+  fills: ['rgba(90,138,173,0.04)', 'rgba(90,138,173,0.03)', 'rgba(60,110,150,0.02)'],
+  flowRate: 2, randomFlowRate: 0, swayRate: 1, randomSwayRate: 0, swayVelocity: 0.2,
+  wavelength: 18, randomWavelength: 0, complexity: 4, randomHeight: 0,
+  curviness: 0.9, offset: 0.3, randomOffset: 0,
+}).mount('#waves');
+
 // === Section fade-in ===
 const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.style.opacity = '1';
-      entry.target.style.transform = 'translateY(0)';
-    }
-  });
+  entries.forEach(entry => { if (entry.isIntersecting) { entry.target.style.opacity = '1'; entry.target.style.transform = 'translateY(0)'; } });
 }, { threshold: 0.1 });
-
 document.querySelectorAll('.section, .cta').forEach(el => {
-  el.style.opacity = '0';
-  el.style.transform = 'translateY(40px)';
-  el.style.transition = 'opacity 1s ease, transform 1s ease';
-  observer.observe(el);
+  el.style.opacity = '0'; el.style.transform = 'translateY(40px)';
+  el.style.transition = 'opacity 1s ease, transform 1s ease'; observer.observe(el);
 });
 </script>
-
 </body>
 </html>
